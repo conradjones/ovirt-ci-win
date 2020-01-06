@@ -2,6 +2,7 @@ import winrs
 import sys
 import base
 import creds
+import os
 
 connection = base.ovirt_connection()
 vms_service = connection.system_service().vms_service()
@@ -19,11 +20,12 @@ if not remote.remoteWaitDeviceIsAwake():
 
 remote.mkdir("c:\\builds")
 
-remote.put(sys.argv[1], "c:\\builds\\script.ps1")
+remote.put(sys.argv[1], "c:\\builds\\%s" % os.path.basename(sys.argv[1]))
 
 with open(sys.argv[1], "r") as file:
     script = file.read()
 
-
-if not remote.cmd("powershell -noprofile -noninteractive -executionpolicy Bypass -command c:\\builds\\script.ps1"):
+if not remote.cmd(
+        "powershell -noprofile -noninteractive -executionpolicy Bypass -command c:\\builds\\%s" % os.path.basename(
+                sys.argv[1])):
     exit(1)
