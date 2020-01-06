@@ -21,4 +21,9 @@ remote.mkdir("c:\\builds")
 
 remote.put(sys.argv[1], "c:\\builds\\script.ps1")
 
-remote.executePowershellScript("c:\\builds\\script.ps1")
+with open(sys.argv[1], "r") as file:
+    script = file.read()
+
+
+if not remote.cmd("powershell -noprofile -noninteractive -executionpolicy Bypass -command c:\\builds\\script.ps1"):
+    exit(1)

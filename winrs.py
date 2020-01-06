@@ -1,6 +1,7 @@
 from pypsrp.client import Client
 from pypsrp.powershell import PowerShell, RunspacePool
 from pypsrp.wsman import WSMan
+import util
 
 
 def print_stream(stream):
@@ -45,6 +46,10 @@ class WinRsRemote:
 
         return True
 
+    def remoteWaitDeviceIsAwake(self):
+        return util.wait_for(lambda: self.connect(), operation_name="remoteDeviceIsAwake",
+                             wait_name="Ping %s" % self._host)
+
     def put(self, source, remote):
         client = Client(self._host, username=self._user, password=self._auth, ssl=False, connection_timeout=10)
         client.copy(source, remote)
@@ -69,6 +74,15 @@ class WinRsRemote:
         if had_errors:
             print_error_stream(streams.error)
         return not had_errors
+
+    def cmd(self, command):
+        client = Client(self._host, username=self._user, password=self._auth, ssl=False, connection_timeout=10)
+        out, err, rc = client.execute_cmd(command)
+        print("%s" % out)
+        if rc != 0:
+            print("Error:%s" % err)
+
+        return rc == 0
 
     @property
     def client(self):

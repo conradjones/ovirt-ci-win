@@ -35,7 +35,11 @@ def ovirt_connection():
     url=creds.ovirt_url,
     username=creds.ovirt_user,
     password=creds.ovirt_password,
-    ca_file=creds.ovirt_ca_file)
+    ca_file=ovirt_ca_file)
 
 def vm_name():
-    return "test"
+    return "gitlab-runner-%s-%s-%s-%s" % \
+           (os.environ['CUSTOM_ENV_CI_RUNNER_ID'],
+            os.environ['CUSTOM_ENV_CI_PROJECT_ID'],
+            os.environ['CUSTOM_ENV_CI_CONCURRENT_PROJECT_ID'],
+            os.environ['CUSTOM_ENV_CI_JOB_ID'])
